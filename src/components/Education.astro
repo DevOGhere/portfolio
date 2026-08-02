@@ -1,0 +1,215 @@
+---
+// Degrees stay two lines; the course sky is the easter egg.
+// Drop official university SVGs into public/logos/ and swap the monograms.
+const degrees = [
+  {
+    mark: 'GAU',
+    logo: '/logos/uni-goettingen.svg',
+    degree: 'M.Sc. Applied Data Science',
+    uni: 'Georg-August-Universität Göttingen',
+    place: 'Göttingen, Germany',
+    period: 'MAR 2026 — PRESENT',
+    grade: 'first semester · in progress',
+    minor: null,
+    skyh: '160px',
+    sky: [
+      { name: 'Data Management', x: 16, y: 24 },
+      { name: 'Data Science Infrastructures', x: 54, y: 14 },
+      { name: 'Semistructured Data & XML', x: 32, y: 54 },
+      { name: 'German', x: 12, y: 78 },
+    ],
+  },
+  {
+    mark: 'GGSIPU',
+    logo: '/logos/uni-btech.svg',
+    degree: 'B.Tech Computer Science & Engineering',
+    uni: 'Guru Gobind Singh Indraprastha University',
+    place: 'Delhi, India',
+    period: 'NOV 2021 — MAY 2025',
+    grade: 'GPA 9.62 / 10 (≈ 1.2 on the German scale, sehr gut)',
+    minor: 'MINOR · ARTIFICIAL INTELLIGENCE & MACHINE LEARNING · +20 CREDITS',
+    skyh: '250px',
+    sky: [
+      { name: 'Discrete Mathematics', x: 6, y: 5 },
+      { name: 'Programming Fundamentals', x: 44, y: 10 },
+      { name: 'Python Programming', x: 76, y: 4 },
+      { name: 'Probability, Statistics & Linear Programming', x: 8, y: 16 },
+      { name: 'Data Structures', x: 66, y: 20 },
+      { name: 'Computational Methods', x: 30, y: 26 },
+      { name: 'Database Management Systems', x: 10, y: 36 },
+      { name: 'Object-Oriented Programming', x: 52, y: 32 },
+      { name: 'Automata Theory', x: 82, y: 30 },
+      { name: 'Design & Analysis of Algorithms', x: 26, y: 46 },
+      { name: 'Compiler Design', x: 70, y: 44 },
+      { name: 'Computer Networks', x: 8, y: 56 },
+      { name: 'Operating Systems', x: 48, y: 56 },
+      { name: 'Data Warehousing & Data Mining', x: 62, y: 52 },
+      { name: 'Data Modelling', x: 86, y: 74 },
+      { name: 'Statistics, Statistical Modelling & Data Analytics', x: 14, y: 66 },
+      { name: 'Artificial Intelligence', x: 72, y: 62, m: true },
+      { name: 'Machine Learning', x: 34, y: 76, m: true },
+      { name: 'Reinforcement Learning & Deep Learning', x: 52, y: 86, m: true },
+      { name: 'Computer Vision', x: 10, y: 88, m: true },
+      { name: 'Minor Project: CLIP vs YOLO vs CNN, allergen detection', x: 22, y: 96, m: true },
+    ],
+  },
+];
+---
+
+<section class="wrap" id="education">
+  <div class="sec-head rv">
+    <h2 class="mono">EDUCATION</h2>
+    <span class="mono">hover a degree, the coursework is a sky</span>
+  </div>
+
+  <div class="grid">
+    {degrees.map((d) => (
+      <article class="edu rv" tabindex="0" style={`--skyh:${d.skyh}`}>
+        <div class="head">
+          <span class="mark mono" aria-hidden="true">
+            {d.logo ? <img src={d.logo} alt="" loading="lazy" /> : d.mark}
+          </span>
+          <div>
+            <h3 class="display">{d.degree}</h3>
+            <p class="uni">{d.uni} · {d.place}</p>
+            <div class="meta mono">
+              <span class="period">{d.period}</span>
+              <span class="grade">{d.grade}</span>
+              {d.minor && <span class="minorchip">{d.minor}</span>}
+            </div>
+          </div>
+        </div>
+        <div class="sky" aria-label={`Coursework: ${d.sky.map((c) => c.name).join(', ')}`}>
+          {d.sky.map((c, i) => (
+            <span class={`star${c.m ? ' minor' : ''}`} style={`left:${c.x}%; top:${c.y}%; --d:${i * 0.3}s`}>
+              <i></i>{c.name}
+            </span>
+          ))}
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<script>
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.edu').forEach((card) => {
+    // touch devices: tap toggles the course sky
+    card.addEventListener('click', () => card.classList.toggle('open'));
+
+    // big skies rotate: max 7 courses lit at once, each visible ~9s
+    const stars = [...card.querySelectorAll('.star')];
+    if (reduced || stars.length <= 8) {
+      stars.forEach((s) => s.classList.add('lit'));
+      return;
+    }
+    const MAX = 7;
+    // shuffled start + random swap-ins so the lit set never clusters spatially
+    const queue = stars.map((_, i) => i);
+    for (let i = queue.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [queue[i], queue[j]] = [queue[j], queue[i]];
+    }
+    const visible = queue.splice(0, MAX);
+    visible.forEach((i) => stars[i].classList.add('lit'));
+    setInterval(() => {
+      const out = visible.shift()!;
+      stars[out].classList.remove('lit');
+      queue.push(out);
+      const inn = queue.splice(Math.floor(Math.random() * (queue.length - 3)), 1)[0]!;
+      stars[inn].classList.add('lit');
+      visible.push(inn);
+    }, 1300);
+  });
+</script>
+
+<style>
+  .sec-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: var(--rule-w) solid var(--rule);
+    padding-top: 12px; margin: 30px 0;
+    transition: border-color 0.5s;
+  }
+  .sec-head h2 { font-size: 13px; letter-spacing: 0.18em; margin: 0; font-weight: 800; }
+  .sec-head span { font-size: var(--size-label); color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+  .edu {
+    border: 1px solid var(--border); background: var(--card); border-radius: 6px;
+    padding: 22px 24px; cursor: pointer;
+    transition: border-color 0.3s, background 0.5s;
+  }
+  .edu:hover, .edu:focus-visible, .edu.open { border-color: var(--accent); }
+  .edu:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .head { display: flex; gap: 16px; align-items: flex-start; }
+  .mark {
+    flex: none; display: grid; place-items: center;
+    min-width: 54px; height: 54px; padding: 0 8px;
+    border: var(--rule-w) solid var(--rule); border-radius: 4px;
+    font-size: 11px; letter-spacing: 0.08em; font-weight: 700;
+    transition: border-color 0.5s;
+  }
+  .mark img { width: 34px; height: 34px; object-fit: contain; }
+  .display { font-size: 1.05rem; margin: 0 0 4px; }
+  .uni { margin: 0 0 10px; color: var(--muted); font-size: var(--size-small); }
+
+  .meta {
+    display: flex; flex-direction: column; gap: 5px;
+    font-size: var(--size-label); color: var(--muted); letter-spacing: 0.04em;
+  }
+  .meta .period { color: var(--accent); letter-spacing: 0.14em; }
+  .meta .grade { font-variant-numeric: tabular-nums; }
+  .minorchip {
+    align-self: flex-start;
+    margin-top: 3px; padding: 4px 10px;
+    border: 1px solid var(--accent); border-radius: 3px;
+    color: var(--accent); font-size: 10px; letter-spacing: 0.12em; font-weight: 700;
+    animation: chipglow 3.2s ease-in-out infinite;
+  }
+  @keyframes chipglow {
+    0%, 100% { box-shadow: 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+    50% { box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 40%, transparent); }
+  }
+
+  /* the course sky */
+  .sky {
+    position: relative; height: 0; overflow: hidden; margin-top: 0;
+    transition: height 0.45s ease, margin-top 0.45s ease;
+  }
+  .edu:hover .sky, .edu:focus-visible .sky, .edu.open .sky {
+    height: var(--skyh, 170px); margin-top: 18px;
+  }
+  .star {
+    position: absolute; transform: translate(-4px, -4px);
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em;
+    color: var(--muted); white-space: nowrap; max-width: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .star.minor { color: var(--accent); }
+  .star.minor i { box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent); }
+  /* open sky: only lit courses show; JS rotates which 7 are lit */
+  .edu:hover .star.lit, .edu:focus-visible .star.lit, .edu.open .star.lit {
+    opacity: 1;
+    animation: drift 14s ease-in-out infinite;
+    animation-delay: calc(var(--d, 0s) * 4);
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate(-4px, -4px); }
+    33% { transform: translate(-1px, -8px); }
+    66% { transform: translate(-7px, -1px); }
+  }
+  .star i {
+    display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); margin-right: 7px;
+    animation: twinkle 3s ease-in-out infinite; animation-delay: var(--d, 0s);
+  }
+  @keyframes twinkle { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .sky, .star { transition: none; }
+    .star i { animation: none; }
+    .minorchip { animation: none; }
+    .edu:hover .star.lit, .edu:focus-visible .star.lit, .edu.open .star.lit { animation: none; opacity: 1; }
+  }
+</style>

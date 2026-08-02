@@ -1,0 +1,77 @@
+---
+// the site held to its own standard: measured, honest, cheap to run.
+// numbers from the last local build — re-measure before deploys.
+const facts = [
+  { k: 'TOTAL SHIPPED', v: '~102 KB, all three pages', note: 'smaller than one hero image on most portfolios' },
+  { k: 'JAVASCRIPT', v: '~11 KB', note: 'the name animation and the dog included' },
+  { k: 'FRAMEWORKS IN YOUR BROWSER', v: '0', note: 'Astro compiles itself away' },
+  { k: 'WEBFONT BYTES', v: '0', note: 'system fonts only' },
+  { k: 'COOKIES · TRACKERS · ANALYTICS', v: '0 · 0 · 0', note: 'you were never the product here' },
+  { k: 'CANVAS', v: 'hand-rolled', note: 'no animation libraries were harmed or used' },
+];
+---
+
+<section class="wrap" id="colophon">
+  <div class="sec-head rv">
+    <h2 class="mono">COLOPHON</h2>
+    <span class="mono">the site, held to its own standard</span>
+  </div>
+
+  <p class="thesis rv">
+    A portfolio should meet the same bar as a pipeline:
+    <em>measured, honest, cheap to run.</em> So here are this page’s own receipts.
+  </p>
+
+  <div class="facts rv">
+    {facts.map((f) => (
+      <div class="fact">
+        <span class="k mono">{f.k}</span>
+        <span class="v mono">{f.v}</span>
+        <span class="n">{f.note}</span>
+      </div>
+    ))}
+  </div>
+
+  <p class="aside mono only-night rv">
+    ✳ built in a dozen rounds of brutal feedback with an AI pair; the human had final cut.
+    the dog is not a metaphor; he’s a labrador.
+  </p>
+</section>
+
+<style>
+  .sec-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: var(--rule-w) solid var(--rule);
+    padding-top: 12px; margin: 30px 0;
+    transition: border-color 0.5s;
+  }
+  .sec-head h2 { font-size: 13px; letter-spacing: 0.18em; margin: 0; font-weight: 800; }
+  .sec-head span { font-size: var(--size-label); color: var(--muted); }
+
+  .thesis {
+    font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.65;
+    color: var(--ink); max-width: 52ch; margin: 0 0 28px;
+  }
+  .thesis em { color: var(--accent); font-style: italic; }
+
+  .facts {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .fact {
+    border: 1px solid var(--border); background: var(--card);
+    border-radius: 5px; padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 4px;
+    transition: border-color 0.3s;
+  }
+  .fact:hover { border-color: var(--accent); }
+  .k { font-size: 9.5px; letter-spacing: 0.16em; color: var(--muted); }
+  .v { font-size: 1.05rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .n { font-size: var(--size-label); color: var(--muted); line-height: 1.5; }
+
+  .aside {
+    margin: 26px 0 0; font-size: var(--size-label); letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .aside::first-letter { color: var(--neon-amber); }
+</style>

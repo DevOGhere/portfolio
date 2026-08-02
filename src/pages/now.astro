@@ -1,0 +1,62 @@
+---
+import Base from '../layouts/Base.astro';
+// the /now page: what the workshop is producing this month. update by hand.
+const updated = 'AUG 2026';
+const items = [
+  {
+    k: 'RUNNING',
+    body: '10-Bit Village V2 has been alive and ticking since the Run 2 cutover: 200K+ ticks, tens of thousands of gossips and dreams, no restart in days.',
+  },
+  {
+    k: 'STUDYING',
+    body: 'MSc Applied Data Science at Göttingen, summer semester. Exam season.',
+  },
+  {
+    k: 'LEARNING',
+    body: 'German. The goal is conversation, not certificates.',
+  },
+  {
+    k: 'NEXT',
+    body: 'Winter internship applications in data engineering, analytics & BI, open now. This site is part of the application.',
+  },
+];
+---
+
+<Base title="Now · Ojaswi Sharma" description="What the workshop is producing right now.">
+  <main class="wrap">
+    <p class="eyebrow">NOW · UPDATED {updated}</p>
+    <h1 class="display">What the workshop is <em>producing.</em></h1>
+
+    <div class="items">
+      {items.map((it) => (
+        <div class="item rv in">
+          <span class="k mono">{it.k}</span>
+          <p>{it.body}</p>
+        </div>
+      ))}
+    </div>
+
+    <p class="note only-night mono">this page goes stale on purpose. if the date above is old, the workshop got busy.</p>
+    <a class="back mono" href="/">← back to the pipeline</a>
+  </main>
+</Base>
+
+<style>
+  main { min-height: 70vh; padding-top: 64px; padding-bottom: 90px; }
+  .display { font-size: var(--size-h2); max-width: 16ch; margin-bottom: 46px; }
+  .items { display: flex; flex-direction: column; max-width: 60ch; }
+  .item {
+    display: grid; grid-template-columns: 110px 1fr; gap: 20px;
+    padding: 18px 0; border-top: 1px solid var(--border); align-items: baseline;
+  }
+  .item:last-child { border-bottom: 1px solid var(--border); }
+  .k { font-size: 10px; letter-spacing: 0.16em; color: var(--accent); }
+  .item p { margin: 0; color: var(--ink); font-size: var(--size-small); line-height: 1.65; }
+  .note { margin: 26px 0 0; font-size: var(--size-label); color: var(--muted); }
+  .back {
+    display: inline-block; margin-top: 44px;
+    font-size: 11.5px; letter-spacing: 0.08em; color: var(--ink);
+    text-decoration: none; border-bottom: 2px solid var(--accent); padding-bottom: 2px;
+  }
+  @media (max-width: 560px) { .item { grid-template-columns: 1fr; gap: 6px; } }
+</style>

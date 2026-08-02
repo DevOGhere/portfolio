@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="404 · row not found" description="This record was last seen heading east.">
+  <main class="wrap">
+    <p class="eyebrow">HTTP 404 · ROW NOT FOUND</p>
+    <h1 class="display">This record was last seen <em>heading east.</em></h1>
+    <p class="sub">
+      It may have left with <span class="mono">payroll_2019.csv</span>.
+      The rest of the data is accounted for.
+    </p>
+    <a class="back mono" href="/">← back to the pipeline</a>
+  </main>
+</Base>
+
+<style>
+  main { min-height: 70vh; padding-top: 64px; padding-bottom: 90px; }
+  .display { font-size: var(--size-h2); max-width: 16ch; margin-bottom: 24px; }
+  .sub { color: var(--muted); font-size: var(--size-small); max-width: 44ch; margin: 0; line-height: 1.65; }
+  .sub .mono { color: var(--accent); font-size: 0.85em; }
+  .back {
+    display: inline-block; margin-top: 44px;
+    font-size: 11.5px; letter-spacing: 0.08em; color: var(--ink);
+    text-decoration: none; border-bottom: 2px solid var(--accent); padding-bottom: 2px;
+  }
+</style>

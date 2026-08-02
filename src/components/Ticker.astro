@@ -1,0 +1,42 @@
+---
+// live-status ticker — one strip of motion between hero and work
+const items = [
+  'CURRENTLY BUILDING: FATHOMPULSE',
+  'SHIPPED: FATHOM · P99 63.4MS',
+  'STATUS: MSC GÖTTINGEN · SEM 1',
+  'GERMAN: A2 → B1 LOADING…',
+  'VILLAGE: POPULATION 10 · ALIVE',
+  'NEXT: WINTER INTERNSHIP ’27',
+];
+---
+
+<div class="ticker" aria-hidden="true">
+  <div class="track">
+    {[0, 1].map(() => (
+      <div class="seq">
+        {items.map((i) => (
+          <span class="mono">{i}<b>◆</b></span>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .ticker {
+    overflow: hidden;
+    border-top: var(--rule-w) solid var(--rule);
+    border-bottom: var(--rule-w) solid var(--rule);
+    transition: border-color 0.5s;
+  }
+  .track { display: flex; width: max-content; animation: roll 30s linear infinite; }
+  .ticker:hover .track { animation-play-state: paused; }
+  .seq { display: flex; }
+  span {
+    font-size: 11.5px; letter-spacing: 0.16em; font-weight: 600;
+    padding: 11px 0; white-space: nowrap; color: var(--ink);
+  }
+  span b { color: var(--accent); margin: 0 22px; font-weight: 400; }
+  @keyframes roll { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .track { animation: none; } }
+</style>

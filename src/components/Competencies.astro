@@ -1,0 +1,166 @@
+---
+// Two parts: the human paragraph (facts, not adjectives),
+// then technical competencies — each wired to its proof.
+const wires = [
+  { skill: 'Streaming & real-time systems', tools: 'Kafka / Redpanda · Protobuf · TimescaleDB · ClickHouse', proof: 'Fathom: P99 63.4 ms, live soak', href: '#work' },
+  { skill: 'Production data engineering', tools: 'Databricks · Delta Lake · Spark · Snowflake · medallion · SCD 1/2', proof: '18 months in production at Veersa', href: '#experience' },
+  { skill: 'Data quality & reliability', tools: 'DQ validation · alerts · watermark ingestion', proof: 'the silent data-loss incident: found, fixed, backfilled', href: '#experience' },
+  { skill: 'Observability', tools: 'Prometheus · Grafana · pipeline monitoring', proof: 'every Fathom claim on this page is a dashboard first', href: '#work' },
+  { skill: 'Multi-agent systems & simulation', tools: 'deterministic cores · checkpointing · agent design', proof: '10-Bit Village: emergent and reproducible', href: '#work' },
+  { skill: 'Languages', tools: 'Python · SQL · PySpark · C/C++ (DSA)', proof: 'everything above', href: '#work' },
+  { skill: 'GenAI-accelerated workflow', tools: 'Claude Code · LLM APIs · agent pipelines · prompt-driven tooling', proof: 'this site, designed and built with an agent in the loop. human had final cut', href: '#top', genai: true },
+];
+
+// the human ones — earned, not adjectives
+const humanSkills = [
+  'stakeholder comms, up to C-suite',
+  'cross-timezone teams · IN / US / DE',
+  'learning on the run',
+  'ownership end-to-end',
+  'explaining tech to non-tech rooms',
+];
+
+// the wiring diagram — every skill physically wired to where it's proven
+const nodes = [
+  { label: 'FATHOM', href: '#work' },
+  { label: 'FATHOMPULSE', href: '#work' },
+  { label: '10-BIT VILLAGE', href: '#work' },
+  { label: 'VEERSA', href: '#experience' },
+];
+const skills = [
+  { label: 'STREAMING', to: [0] },
+  { label: 'PRODUCTION DE', to: [3] },
+  { label: 'DATA QUALITY', to: [3] },
+  { label: 'OBSERVABILITY', to: [0] },
+  { label: 'MULTI-AGENT SIM', to: [2] },
+  { label: 'LANGUAGES', to: [0, 1, 2, 3] },
+];
+const SY = (i: number) => 30 + i * 46;
+const TY = (j: number) => 52 + j * 62;
+const wirePath = (i: number, j: number) =>
+  `M 176 ${SY(i) - 4} C 340 ${SY(i) - 4}, 400 ${TY(j) - 4}, 560 ${TY(j) - 4}`;
+---
+
+<section class="wrap" id="competencies">
+  <div class="sec-head rv">
+    <h2 class="mono">COMPETENCIES</h2>
+    <span class="mono">claims wired to receipts</span>
+  </div>
+
+  <p class="human rv">
+    Shipped with Indian colleagues for US clients; now studying in Germany with an
+    international cohort. Promoted from intern to engineer in eleven months while
+    learning on the run, and briefing leadership before turning 22.
+    Independent by default, target-oriented by habit. The adjectives are yours
+    to conclude; the facts are above.
+  </p>
+
+  <div class="hchips rv">
+    {humanSkills.map((h) => <span class="mono">{h}</span>)}
+  </div>
+
+  <svg class="wiremap rv" viewBox="0 0 740 300" role="img"
+       aria-label="Diagram wiring each competency to the project or job where it is proven">
+    {skills.map((s, i) => (
+      <g class="ws">
+        <text class="sl" x="168" y={SY(i)} text-anchor="end">{s.label}</text>
+        {s.to.map((j) => <path d={wirePath(i, j)} />)}
+        {s.to.map((j) => <circle cx="560" cy={TY(j) - 4} r="2.5" />)}
+        <circle cx="176" cy={SY(i) - 4} r="2.5" />
+      </g>
+    ))}
+    {nodes.map((n, j) => (
+      <a href={n.href}>
+        <text class="nl" x="572" y={TY(j)}>{n.label}</text>
+      </a>
+    ))}
+  </svg>
+
+  <div class="wiretable rv">
+    {wires.map((w) => (
+      <a class="wire" href={w.href}>
+        <span class="skill">{w.skill}
+          {w.genai && <span class="cc mono only-night" aria-hidden="true">✳ claude code says hi</span>}
+        </span>
+        <span class="tools mono">{w.tools}</span>
+        <span class="proof mono">→ {w.proof}</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .sec-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: var(--rule-w) solid var(--rule);
+    padding-top: 12px; margin: 30px 0;
+    transition: border-color 0.5s;
+  }
+  .sec-head h2 { font-size: 13px; letter-spacing: 0.18em; margin: 0; font-weight: 800; }
+  .sec-head span { font-size: var(--size-label); color: var(--muted); }
+
+  .human {
+    font-family: var(--font-serif);
+    font-size: 1.08rem; line-height: 1.7;
+    max-width: 58ch; margin: 0 0 20px; color: var(--ink);
+  }
+
+  .hchips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 36px; }
+  .hchips span {
+    font-size: 10.5px; letter-spacing: 0.08em; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 5px 12px; transition: border-color 0.3s, color 0.3s;
+  }
+  .hchips span:hover { border-color: var(--accent); color: var(--ink); }
+
+  .cc {
+    display: inline-block; margin-left: 10px;
+    font-size: 10px; letter-spacing: 0.1em; font-weight: 400;
+    color: var(--neon-amber); opacity: 0;
+    transition: opacity 0.35s;
+  }
+  .wire:hover .cc, .wire:focus-visible .cc { opacity: 1; }
+
+  .wiremap {
+    display: block; width: 100%; max-width: 740px;
+    margin: 0 0 30px; overflow: visible;
+  }
+  .wiremap text {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+    fill: var(--muted); transition: fill 0.3s;
+  }
+  .wiremap .nl { fill: var(--ink); font-weight: 700; }
+  .wiremap path {
+    fill: none; stroke: var(--border); stroke-width: 1.2;
+    transition: stroke 0.3s, opacity 0.3s;
+  }
+  .wiremap circle { fill: var(--border); transition: fill 0.3s, opacity 0.3s; }
+  /* hover a skill: its wires light up, the rest recede */
+  .wiremap:hover .ws path, .wiremap:hover .ws circle { opacity: 0.25; }
+  .wiremap:hover .ws text { fill: color-mix(in srgb, var(--muted) 55%, transparent); }
+  .wiremap .ws:hover path { opacity: 1; stroke: var(--accent); stroke-width: 1.6; }
+  .wiremap .ws:hover circle { opacity: 1; fill: var(--accent); }
+  .wiremap .ws:hover text { fill: var(--ink); }
+  :global(html[data-mode='night']) .wiremap .ws:hover path {
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 60%, transparent));
+  }
+  .wiremap a text { text-decoration: none; }
+  .wiremap a:hover text, .wiremap a:focus-visible text { fill: var(--accent); }
+  @media (max-width: 700px) { .wiremap { display: none; } }
+
+  .wiretable { display: flex; flex-direction: column; }
+  .wire {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 8px 24px; align-items: baseline;
+    padding: 13px 10px; text-decoration: none;
+    border-top: 1px solid var(--border);
+    transition: background 0.25s;
+  }
+  .wire:last-child { border-bottom: 1px solid var(--border); }
+  .wire:hover, .wire:focus-visible { background: var(--card); }
+  .wire:hover .proof, .wire:focus-visible .proof { color: var(--accent); }
+  @media (max-width: 700px) { .wire { grid-template-columns: 1fr; gap: 3px; } }
+  .skill { font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+  .tools { font-size: var(--size-label); color: var(--muted); letter-spacing: 0.03em; }
+  .proof { font-size: var(--size-label); color: var(--muted); letter-spacing: 0.03em; transition: color 0.25s; }
+</style>

@@ -1,0 +1,125 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Ticker from '../components/Ticker.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import Timeline from '../components/Timeline.astro';
+import Education from '../components/Education.astro';
+import Competencies from '../components/Competencies.astro';
+import Shelf from '../components/Shelf.astro';
+import Drift from '../components/Drift.astro';
+import Colophon from '../components/Colophon.astro';
+
+const entries = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+const projects = await Promise.all(
+  entries.map(async (p) => ({ ...p, Content: (await render(p)).Content }))
+);
+---
+
+<Base>
+  <Hero />
+  <Ticker />
+
+  <Timeline />
+
+  <Drift items={['fathom_ticks_0703.avro', 'bronze → silver → gold', '{ "p99_ms": 63.4 }']} />
+
+  <div class="wrap" id="work">
+    <div class="sec-head rv">
+      <h2 class="mono">SELECTED WORK</h2>
+      <span class="mono">receipts included · stories inside</span>
+    </div>
+
+    {projects.map((p) => (
+      <ProjectRow
+        title={p.data.title}
+        tagline={p.data.tagline}
+        summary={p.data.summary}
+        receipts={p.data.receipts}
+        marginalia={p.data.marginalia}
+        learned={p.data.learned}
+        wip={p.data.wip}
+        link={p.data.link}
+        links={p.data.links}
+        transmission={p.data.transmission}
+      >
+        <p.Content />
+      </ProjectRow>
+    ))}
+  </div>
+
+  <Education />
+
+  <Drift items={['coursework.json · 24 records', 'payroll_2019.csv · last seen heading east', 'null']} />
+
+  <Competencies />
+  <Shelf />
+
+  <div class="wrap" id="research">
+    <div class="sec-head rv">
+      <h2 class="mono">RESEARCH</h2>
+      <span class="mono">peer-reviewed</span>
+    </div>
+    <p class="pub rv">
+      Kundra, R., &amp; Ojaswi. “Assessing the Efficiency of Gradient Descent Variants
+      in Training Neural Networks.” <em>Darpan International Research Analysis</em>,
+      vol.&nbsp;12, no.&nbsp;3, pp.&nbsp;596–604, Sep.&nbsp;2024.
+      <a href="https://doi.org/10.36676/dira.v12.i3.114" class="mono">DOI: 10.36676/dira.v12.i3.114</a>
+    </p>
+  </div>
+
+  <Colophon />
+
+  <div class="wrap">
+    <footer class="rv">
+      <h2 class="display only-day">Open to <em>winter internships in data engineering, analytics &amp; BI.</em></h2>
+      <h2 class="display only-night">The workshop light is on. <em>Say hi.</em></h2>
+      <div class="links mono">
+        <a href="https://github.com/DevOGhere">GITHUB</a>
+        <a href="https://linkedin.com/in/ojaswishere">LINKEDIN</a>
+        <a href="mailto:ojaswishere@gmail.com">EMAIL</a>
+        <a href="/cv.pdf">CV.PDF</a>
+        <a href="/now">NOW</a>
+      </div>
+      <div class="searches only-night">
+        <p class="searches-label mono">RECENT 2AM SEARCHES, UNEDITED</p>
+        <ul class="mono">
+          <li>kafka consumer group rebalancing why</li>
+          <li>avx2 float determinism across machines</li>
+          <li>w3c prov example that makes sense</li>
+          <li>generalized regression is it too extreme</li>
+          <li>how long do labradors remember people</li>
+        </ul>
+      </div>
+      <p class="hint mono only-night">psst: kaju is hidden somewhere on this site. he also answers to K.</p>
+    </footer>
+  </div>
+</Base>
+
+<style>
+  .sec-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: var(--rule-w) solid var(--rule);
+    padding-top: 12px; margin: 30px 0;
+    transition: border-color 0.5s;
+  }
+  .sec-head h2 { font-size: 13px; letter-spacing: 0.18em; margin: 0; font-weight: 800; }
+  .sec-head span { font-size: var(--size-label); color: var(--muted); }
+  .pub { color: var(--muted); font-size: var(--size-small); max-width: 62ch; margin: 0 0 10px; }
+  .pub em { color: var(--ink); }
+  .pub a { color: var(--accent); text-decoration: none; font-size: var(--size-label); letter-spacing: 0.04em; }
+  footer { padding: var(--space-section) 0 90px; }
+  footer .display { font-size: var(--size-h2); max-width: 18ch; margin-bottom: 22px; }
+  .links { display: flex; gap: 26px; font-size: 12.5px; letter-spacing: 0.06em; }
+  .links a { color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
+  .hint { margin-top: 46px; font-size: var(--size-label); color: var(--muted); }
+  .searches { margin-top: 44px; }
+  .searches-label { font-size: 10px; letter-spacing: 0.16em; color: var(--muted); margin: 0 0 8px; }
+  .searches ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .searches li { font-size: var(--size-label); color: var(--muted); }
+  .searches li::before { content: '⌕ '; color: var(--accent); }
+  .searches li:last-child { color: var(--ink); }
+</style>

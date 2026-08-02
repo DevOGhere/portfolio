@@ -1,0 +1,141 @@
+---
+// Experience: facts carry the resume, the humane line carries the person.
+const stops = [
+  {
+    span: 'SEP 2024 — MAR 2026 · 18 MONTHS',
+    org: 'Veersa Technologies',
+    phases: [
+      {
+        tag: 'DATA ENGINEER',
+        period: 'AUG 2025 — MAR 2026',
+        facts: [
+          'Owned 3–4 concurrent client pipelines end-to-end on Databricks + Delta Lake: medallion architecture, SCD Type 1 & 2, millions of records for Fortune-500 pharma / US healthcare',
+          'Agent-productivity BI data product: translated stakeholder KPI definitions into Databricks gold tables from 5+ sources (UKG, Pega, Siebel, Amazon Connect, SharePoint), powering Power BI/Excel reporting for daily, weekly, monthly, and quarterly productivity analysis',
+          'Pharmacy-fulfillment gold layer: multi-join fact tables across Snowflake + Databricks, watermark-based SCD ingestion, ACID Delta transactions',
+          'Diagnosed a silent data-loss incident: an upstream schema change had been dropping Bronze→Silver records undetected for months. Shipped a backward-compatible fix and backfilled all of history',
+        ],
+      },
+      {
+        tag: 'DATA ENGINEERING INTERN',
+        period: 'SEP 2024 — JUL 2025',
+        facts: [
+          'Intern → Data Engineer in 11 months · Rising Star Q3 ’25',
+          'Joined at the start of the client’s migration off a legacy analytics stack onto Databricks for all their analytics needs, part of the founding team that built the platform from the ground up',
+          'Built a configuration-driven ingestion framework that cut new-client onboarding from 2 weeks to 3 days',
+          'Automated SQL-based data-quality checks with Databricks Alerts; orchestrated it all through Databricks Jobs',
+        ],
+      },
+    ],
+    humane:
+      'Where I learned to own things completely: the pipeline, the mistake, the fix, and the conversation with the C-suite about all three.',
+  },
+  {
+    span: 'JUL — AUG 2024',
+    org: 'Indika AI',
+    phases: [
+      {
+        tag: 'AI/ML INTERN',
+        period: 'JUL — AUG 2024',
+        facts: [
+          'Fine-tuned OpenAI Whisper via Hugging Face Transformers for Indian-language ASR: 30–40% word-error-rate reduction',
+          'Lived the whole Hugging Face loop: open models fine-tuned on Indic-language datasets pulled straight from the Hub, inference squeezed into strictly limited GPU budgets',
+          'Built the training-data pipeline (automated audio extraction via the YouTube Data API) plus an internal API project feeding the same corpus',
+          'Helped write the team’s technical blog posts. First practice explaining models to people who don’t build them',
+        ],
+      },
+    ],
+    humane: 'Eight weeks, one clear number. Short chapters count when they end with evidence.',
+  },
+];
+
+const offClock = [
+  { org: 'IEEE MSIT · Executive Committee', span: '2023–25', what: 'ran technical events, grew the branch' },
+  { org: 'DevSource · Technical Content Lead', span: '2023–25', what: 'led content for a dev community' },
+  { org: 'Unnat Bharat Abhiyan', span: '2022', what: 'sustainability & hygiene camp at a Delhi govt school' },
+];
+---
+
+<section class="wrap" id="experience">
+  <div class="sec-head rv">
+    <h2 class="mono">EXPERIENCE</h2>
+    <span class="mono">the humane version</span>
+  </div>
+
+  <div class="timeline">
+    {stops.map((s) => (
+      <article class="stop rv">
+        <div class="dot" aria-hidden="true"></div>
+        <p class="period mono">{s.span}</p>
+        <h3 class="display">{s.org}</h3>
+        {s.phases.map((ph) => (
+          <div class="phase">
+            <p class="ptag mono"><b>{ph.tag}</b> · {ph.period}</p>
+            <ul class="facts">
+              {ph.facts.map((f) => <li>{f}</li>)}
+            </ul>
+          </div>
+        ))}
+        <p class="humane">{s.humane}</p>
+      </article>
+    ))}
+
+    <article class="stop rv">
+      <div class="dot hollow" aria-hidden="true"></div>
+      <p class="period mono">MEANWHILE, OFF THE CLOCK</p>
+      <ul class="off mono">
+        {offClock.map((o) => (
+          <li><b>{o.org}</b> · {o.span} · <span>{o.what}</span></li>
+        ))}
+      </ul>
+    </article>
+  </div>
+</section>
+
+<style>
+  .sec-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: var(--rule-w) solid var(--rule);
+    padding-top: 12px; margin: 30px 0;
+    transition: border-color 0.5s;
+  }
+  .sec-head h2 { font-size: 13px; letter-spacing: 0.18em; margin: 0; font-weight: 800; }
+  .sec-head span { font-size: var(--size-label); color: var(--muted); }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px;
+    width: 1px; background: var(--border);
+  }
+  .stop { position: relative; padding: 0 0 44px; }
+  .dot {
+    position: absolute; left: -26px; top: 7px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .dot.hollow { background: none; border: 2px solid var(--accent); width: 8px; height: 8px; }
+  .period { font-size: var(--size-label); letter-spacing: 0.16em; color: var(--accent); margin: 0 0 8px; }
+  .display { font-size: 1.15rem; margin: 0 0 14px; }
+
+  .phase {
+    border-left: 2px solid var(--border);
+    padding-left: 16px; margin: 0 0 18px;
+    transition: border-color 0.3s;
+  }
+  .phase:hover { border-left-color: var(--accent); }
+  .ptag {
+    font-size: var(--size-label); letter-spacing: 0.14em;
+    color: var(--muted); margin: 0 0 8px;
+  }
+  .ptag b { color: var(--ink); font-weight: 700; }
+
+  .facts { margin: 0; padding-left: 18px; color: var(--muted); font-size: var(--size-small); }
+  .facts li { margin-bottom: 6px; max-width: 68ch; }
+  .humane {
+    font-family: var(--font-serif); font-style: italic;
+    color: var(--ink); font-size: 0.95rem; max-width: 54ch; margin: 6px 0 0;
+  }
+  .off { list-style: none; margin: 0; padding: 0; font-size: var(--size-caption); color: var(--muted); }
+  .off li { margin-bottom: 7px; }
+  .off b { color: var(--ink); font-weight: 600; }
+  .off span { font-family: var(--font-sans); }
+</style>

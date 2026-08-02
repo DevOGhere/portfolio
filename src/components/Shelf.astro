@@ -1,0 +1,69 @@
+---
+// night-only: the shelf of parked ideas. greenhouse, not graveyard.
+const ideas = [
+  {
+    name: 'Brain Decoder',
+    note: 'Nishimoto 2011, but with modern text/video generation bolted on: reconstruct what the brain saw. POC code exists. Waiting for its month.',
+    since: 'parked 2025',
+  },
+  {
+    name: 'Haryanvi LLM',
+    note: 'Fine-tune an open model on my mother tongue. Native speaker from Bahadurgarh; the dataset problem is the fun part.',
+    since: 'parked 2026',
+  },
+  {
+    name: 'Agent OS',
+    note: 'Thesis: agent coordination is an operating-systems problem, and markdown files are the syscalls. Half the tooling already exists; I built it by accident.',
+    since: 'incubating',
+  },
+];
+---
+
+<section class="wrap only-night" id="shelf">
+  <div class="sec-head rv">
+    <h2 class="mono">THE SHELF</h2>
+    <span class="mono">parked, not dead</span>
+  </div>
+
+  <div class="cards rv">
+    {ideas.map((idea) => (
+      <article class="card">
+        <p class="since mono">{idea.since}</p>
+        <h3>{idea.name}</h3>
+        <p class="note">{idea.note}</p>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .sec-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: var(--rule-w) solid var(--rule);
+    padding-top: 12px; margin: 30px 0;
+    transition: border-color 0.5s;
+  }
+  .sec-head h2 { font-size: 13px; letter-spacing: 0.18em; margin: 0; font-weight: 800; }
+  .sec-head span { font-size: var(--size-label); color: var(--muted); }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 2px dashed var(--accent);
+    border-radius: 4px;
+    padding: 18px 20px 20px;
+    transition: transform 0.3s ease;
+  }
+  .card:nth-child(1) { transform: rotate(-1.1deg); }
+  .card:nth-child(2) { transform: rotate(0.8deg); }
+  .card:nth-child(3) { transform: rotate(-0.5deg); }
+  .card:hover { transform: rotate(0deg) translateY(-3px); }
+  .since { font-size: 10px; letter-spacing: 0.16em; color: var(--accent); margin: 0 0 10px; }
+  h3 { font-size: 1.02rem; margin: 0 0 8px; font-weight: 700; }
+  .note {
+    font-family: var(--font-serif); font-style: italic;
+    color: var(--muted); font-size: 0.88rem; line-height: 1.6; margin: 0;
+  }
+  @media (prefers-reduced-motion: reduce) { .card, .card:hover { transform: none; transition: none; } }
+</style>

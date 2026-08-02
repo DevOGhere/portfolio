@@ -1,0 +1,154 @@
+---
+// The route: scroll-driven. The line draws itself as you scroll,
+// a traveling dot rides the draw-head, waypoints light up as it reaches them.
+const waypoints = [
+  { x: 60, y: 148, year: '2003', label: 'BAHADURGARH', note: 'b. Haryana', above: false },
+  { x: 230, y: 108, year: '2021', label: 'DELHI', note: 'B.Tech, GGSIPU', above: true },
+  { x: 420, y: 132, year: '2024', label: 'GREATER NOIDA', note: 'first prod pipelines', above: false },
+  { x: 610, y: 82, year: '2025', label: 'TOKYO', note: 'solo, on purpose', above: true },
+  { x: 800, y: 112, year: '2026', label: 'GÖTTINGEN', note: 'MSc, current', above: false },
+  { x: 950, y: 66, year: '20??', label: '?', note: '', above: true },
+];
+// smooth curve through the waypoints
+const d = waypoints
+  .map((w, i, a) => {
+    if (i === 0) return `M${w.x},${w.y}`;
+    const p = a[i - 1];
+    const cx = (p.x + w.x) / 2;
+    return `C${cx},${p.y} ${cx},${w.y} ${w.x},${w.y}`;
+  })
+  .join(' ');
+const n = waypoints.length;
+---
+
+<section class="interlude" id="route">
+  <div class="inner rv">
+    <p class="e mono">THE ROUTE SO FAR</p>
+    <h2>Bahadurgarh to Göttingen, measured in systems shipped.</h2>
+    <p class="body">
+      Small town in Haryana → engineering in Delhi → production pipelines for US
+      healthcare → a solo month in Japan to prove I could → a masters in Germany.
+      Scroll. The line knows the way.
+    </p>
+  </div>
+
+  <div class="routescroll">
+    <svg class="route" viewBox="0 0 1000 200" preserveAspectRatio="xMidYMid meet" aria-label="Route: Bahadurgarh 2003, Delhi 2021, Greater Noida 2024, Tokyo 2025, Göttingen 2026, next unknown">
+      <path class="ghost" d={d} />
+      <path class="line" id="routeline" d={d} pathLength="1" />
+      <circle id="routehead" class="head" r="5" cx={waypoints[0].x} cy={waypoints[0].y} />
+      {waypoints.map((w, i) => (
+        <g class="wp" data-t={i / (n - 1)}>
+          {w.label === '?' ? (
+            <circle cx={w.x} cy={w.y} r="7" class="node open" />
+          ) : (
+            <circle cx={w.x} cy={w.y} r="5" class="node" />
+          )}
+          <text x={w.x} y={w.above ? w.y - 26 : w.y + 26} class="year mono" text-anchor="middle">{w.year}</text>
+          <text x={w.x} y={w.above ? w.y - 13 : w.y + 39} class="label mono" text-anchor="middle">{w.label}</text>
+          {w.note && (
+            <text x={w.x} y={w.above ? w.y - 2 : w.y + 51} class="note" text-anchor="middle">{w.note}</text>
+          )}
+        </g>
+      ))}
+    </svg>
+  </div>
+
+  <svg class="terrain" id="terrain" viewBox="0 0 1000 90" preserveAspectRatio="none" height="90" aria-hidden="true">
+    <path d="M0,90 L0,56 L130,40 L250,62 L390,22 L530,46 L670,6 L810,34 L1000,18 L1000,90 Z" />
+  </svg>
+</section>
+
+<script>
+  const section = document.getElementById('route')!;
+  const line = document.getElementById('routeline') as unknown as SVGPathElement;
+  const head = document.getElementById('routehead') as unknown as SVGCircleElement;
+  const wps = Array.from(section.querySelectorAll<SVGGElement>('.wp'));
+  const terrain = document.getElementById('terrain') as unknown as SVGElement & HTMLElement;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const total = line.getTotalLength();
+
+  function apply(p: number) {
+    line.style.strokeDashoffset = String(1 - p);
+    const pt = line.getPointAtLength(p * total);
+    head.setAttribute('cx', String(pt.x));
+    head.setAttribute('cy', String(pt.y));
+    head.style.opacity = p > 0.01 && p < 0.995 ? '1' : '0';
+    for (const wp of wps) {
+      wp.classList.toggle('lit', p >= Number(wp.dataset.t) - 0.02);
+    }
+  }
+
+  if (reduced) {
+    apply(1);
+  } else {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const r = section.getBoundingClientRect();
+        const vh = innerHeight;
+        // starts drawing when the section is 80% into view, finishes near its end
+        const p = Math.min(1, Math.max(0, (vh * 0.8 - r.top) / (r.height * 0.85)));
+        apply(p);
+        if (r.top < vh && r.bottom > 0) {
+          terrain.style.transform = `translateY(${(((vh - r.top) / (vh + r.height)) - 0.5) * -22}px)`;
+        }
+      });
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+</script>
+
+<style>
+  .interlude {
+    position: relative;
+    margin: var(--space-section) 0;
+    overflow: hidden;
+    background: linear-gradient(var(--dusk-top) 0%, var(--dusk-mid) 55%, var(--dusk-bottom) 100%);
+    color: var(--dusk-ink);
+  }
+  .inner { max-width: var(--width-page); margin: 0 auto; padding: 88px 28px 10px; }
+  .e { font-size: var(--size-label); letter-spacing: 0.2em; color: var(--dusk-accent); margin: 0 0 18px; }
+  h2 {
+    font-family: var(--font-serif); font-weight: 500;
+    font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+    margin: 0 0 12px; max-width: 24ch; text-wrap: balance;
+  }
+  .body { color: var(--dusk-muted); max-width: 52ch; font-size: 0.96rem; margin: 0; }
+
+  .routescroll { overflow-x: auto; overflow-y: hidden; padding: 30px 0 70px; }
+  .route { display: block; min-width: 760px; width: 100%; height: auto; }
+
+  .ghost { fill: none; stroke: var(--dusk-accent); stroke-width: 1; opacity: 0.15; }
+  .line {
+    fill: none; stroke: var(--dusk-accent); stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    will-change: stroke-dashoffset;
+  }
+  .head {
+    fill: var(--dusk-ink); stroke: var(--dusk-accent); stroke-width: 2;
+    opacity: 0; transition: opacity 0.3s;
+  }
+
+  .wp { opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .wp.lit { opacity: 1; transform: none; }
+  .node { fill: var(--dusk-accent); }
+  .node.open { fill: none; stroke: var(--dusk-accent); stroke-width: 2; animation: breathe 2.6s ease-in-out infinite; }
+  @keyframes breathe { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .year { font-size: 13px; fill: var(--dusk-accent); letter-spacing: 0.12em; }
+  .label { font-size: 12px; fill: var(--dusk-ink); letter-spacing: 0.14em; font-weight: 600; }
+  .note { font-size: 11px; fill: var(--dusk-muted); font-style: italic; font-family: var(--font-serif); }
+
+  .terrain { position: absolute; bottom: -2px; left: 0; width: 100%; will-change: transform; opacity: 0.9; }
+  .terrain path { fill: var(--dusk-terrain); }
+  @media (prefers-reduced-motion: reduce) {
+    .terrain { transform: none !important; }
+    .node.open { animation: none; }
+    .wp { transition: none; }
+  }
+</style>

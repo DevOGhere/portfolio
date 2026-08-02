@@ -1,0 +1,312 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'Ojaswi Sharma · Data Engineer',
+  description = 'I build data systems that prove themselves. End-to-end pipelines, streams and simulations, instrumented until the numbers speak for the work.',
+} = Astro.props;
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en" data-mode="day">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://ojaswishere.in/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      // apply saved mode before first paint to avoid flash
+      const saved = localStorage.getItem('mode');
+      if (saved === 'night' || saved === 'day') {
+        document.documentElement.setAttribute('data-mode', saved);
+      }
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <nav class="wrap">
+        <span class="brand mono">OJASWI SHARMA</span>
+        <button id="mode-toggle" aria-label="Switch between day and night mode">
+          <span class="t-day">DAY</span><span class="t-night">NIGHT</span>
+        </button>
+      </nav>
+    </header>
+
+    <nav class="dotnav" aria-label="Section navigation">
+      <a href="#top" aria-label="Top"></a>
+      <a href="#experience" aria-label="Experience"></a>
+      <a href="#work" aria-label="Selected work"></a>
+      <a href="#education" aria-label="Education"></a>
+      <a href="#competencies" aria-label="Competencies"></a>
+      <a href="#shelf" aria-label="The shelf" class="only-night"></a>
+      <a href="#research" aria-label="Research"></a>
+    </nav>
+
+    <slot />
+
+    <script>
+      const html = document.documentElement;
+      const btn = document.getElementById('mode-toggle')!;
+      btn.setAttribute('aria-pressed', String(html.getAttribute('data-mode') === 'night'));
+      btn.addEventListener('click', () => {
+        const night = html.getAttribute('data-mode') === 'night';
+        const next = night ? 'day' : 'night';
+        html.setAttribute('data-mode', next);
+        localStorage.setItem('mode', next);
+        btn.setAttribute('aria-pressed', String(!night));
+      });
+
+      // scroll reveals
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { threshold: 0.12 }
+      );
+      document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+
+      // brand slides into the navbar once the hero name scrolls away
+      const brand = document.querySelector('.brand')!;
+      const heroName = document.getElementById('heroName');
+      if (heroName) {
+        new IntersectionObserver(([e]) => {
+          brand.classList.toggle('show', !e.isIntersecting);
+        }).observe(heroName);
+      } else {
+        brand.classList.add('show');
+      }
+
+      // dot rail scrollspy
+      const dots = [...document.querySelectorAll<HTMLAnchorElement>('.dotnav a')];
+      const spy = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const id = '#' + e.target.id;
+            dots.forEach((d) => d.classList.toggle('on', d.getAttribute('href') === id));
+          });
+        },
+        { rootMargin: '-42% 0px -52%' }
+      );
+      dots.forEach((d) => {
+        const t = document.querySelector(d.getAttribute('href')!);
+        if (t) spy.observe(t);
+        else d.style.display = 'none'; // rail only shows sections that exist on this page
+        // arriving at education via the rail: open both course skies,
+        // fold back on the next user scroll (hover keeps working as usual)
+        if (d.getAttribute('href') === '#education') {
+          d.addEventListener('click', () => {
+            const cards = document.querySelectorAll('.edu');
+            cards.forEach((c) => c.classList.add('open'));
+            const close = () => cards.forEach((c) => c.classList.remove('open'));
+            setTimeout(() => {
+              addEventListener('wheel', close, { once: true, passive: true });
+              addEventListener('touchstart', close, { once: true, passive: true });
+            }, 1200);
+          });
+        }
+      });
+
+      // easter egg: press K at night. the dog inspects your screen.
+      const EKA = [
+        '..............BB..',
+        '.............BBDB.',
+        '.............DBBBD',
+        '..............BBB.',
+        'TT.BBBBBBBBBBBBB..',
+        '.TBBBBBBBBBBBBB...',
+        '..BBBBBBBBBBBB....',
+        '..BBB......BBB....',
+        '..BB........BB....',
+        '..BB........BB....',
+        '..DD........DD....',
+      ];
+      const EKB = [
+        '..............BB..',
+        '.............BBDB.',
+        '.............DBBBD',
+        '..............BBB.',
+        '.T.BBBBBBBBBBBBB..',
+        'TTBBBBBBBBBBBBB...',
+        '..BBBBBBBBBBBB....',
+        '.BBB........BBB...',
+        '.BB..........BB...',
+        'BB............BB..',
+        'DD............DD..',
+      ];
+      let egging = false;
+      addEventListener('keydown', (e) => {
+        if (egging || e.key.toLowerCase() !== 'k' || e.metaKey || e.ctrlKey || e.altKey) return;
+        const tg = e.target as HTMLElement;
+        if (tg && /input|textarea|select/i.test(tg.tagName)) return;
+        if (html.getAttribute('data-mode') !== 'night') return;
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        egging = true;
+        const cv = document.createElement('canvas');
+        const W = innerWidth, H = innerHeight;
+        cv.width = W; cv.height = H;
+        cv.style.cssText = 'position:fixed;inset:0;z-index:980;pointer-events:none';
+        document.body.appendChild(cv);
+        const ctx = cv.getContext('2d')!;
+        const P = 12, KW = 18 * P, KH = 11 * P;
+        const mid = (W - KW) / 2;
+        const WALK = 2200, LICK = 2400, TOTAL = WALK * 2 + LICK;
+        const t0 = performance.now();
+        const paint = (map: string[], x: number, y: number) => {
+          for (let r = 0; r < map.length; r++)
+            for (let c = 0; c < map[r].length; c++) {
+              const ch = map[r][c];
+              if (ch === '.') continue;
+              ctx.fillStyle = ch === 'B' ? '#E8C27C' : '#6B4E2A';
+              ctx.fillRect(x + c * P, y + r * P, P, P);
+            }
+        };
+        // each lick starts at the mouth, arcs up the screen, and leaves a smear that dries
+        const trail: { x: number; y: number; a: number; r: number }[] = [];
+        const step = (now: number) => {
+          const t = now - t0;
+          ctx.clearRect(0, 0, W, H);
+          let x = mid, walking = false;
+          if (t < WALK) { x = -KW + (mid + KW) * (t / WALK); walking = true; }
+          else if (t > WALK + LICK) { x = mid + (W + KW - mid) * ((t - WALK - LICK) / WALK); walking = true; }
+          const licking = t >= WALK && t <= WALK + LICK;
+
+          for (const s of trail) {
+            s.a *= 0.955;
+            ctx.fillStyle = `rgba(255,122,217,${s.a.toFixed(3)})`;
+            ctx.beginPath();
+            ctx.ellipse(s.x, s.y, s.r, s.r * 0.45, 0, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          while (trail.length && trail[0].a < 0.004) trail.shift();
+
+          const bob = licking ? Math.round(Math.sin(t / 60) * 3) : 0;
+          const dy = H - KH - 10 + bob;
+          const mouthX = x + 16 * P, mouthY = dy + 3 * P;
+
+          if (licking) {
+            const pass = Math.floor((t - WALK) / 800);
+            const lt = ((t - WALK) / 800) % 1;
+            const e = 1 - (1 - lt) ** 2; // tongue leaves fast, trails off slow
+            const dir = pass % 2 ? -1 : 1;
+            const ty = mouthY - e * (H + 160);
+            const tx = mouthX + dir * Math.sin(e * Math.PI) * W * 0.18;
+            const grad = ctx.createLinearGradient(tx, ty + 170, tx, ty - 60);
+            grad.addColorStop(0, 'rgba(255,122,217,0.03)');
+            grad.addColorStop(0.7, 'rgba(255,122,217,0.16)');
+            grad.addColorStop(1, 'rgba(255,122,217,0.30)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.ellipse(tx, ty, 46 + 18 * Math.sin(e * Math.PI), 150, dir * 0.12, 0, Math.PI * 2);
+            ctx.fill();
+            trail.push({ x: tx, y: ty, a: 0.045, r: 60 + 30 * Math.sin(e * Math.PI) });
+
+            const ca = Math.min(Math.max((t - WALK - 650) / 450, 0), 0.9);
+            if (ca > 0) {
+              ctx.font = '600 13px ui-monospace, SFMono-Regular, monospace';
+              ctx.fillStyle = `rgba(255,122,217,${ca.toFixed(2)})`;
+              ctx.textAlign = 'center';
+              ctx.fillText('* lick *  screen cleaned. no crumbs found.', W / 2, H - KH - 52);
+            }
+          }
+
+          paint(walking && Math.floor(now / 140) % 2 ? EKB : EKA, x, dy);
+          if (licking) {
+            // little pixel tongue flicking at the mouth
+            ctx.fillStyle = '#FF7AD9';
+            const flick = Math.floor(now / 120) % 2;
+            ctx.fillRect(mouthX, mouthY - flick * P, P, P * (1 + flick));
+          }
+          if (t < TOTAL || trail.length) requestAnimationFrame(step);
+          else { cv.remove(); egging = false; }
+        };
+        requestAnimationFrame(step);
+      });
+    </script>
+
+    <style>
+      .topbar {
+        position: sticky; top: 0; z-index: 60;
+        background: color-mix(in srgb, var(--ground) 86%, transparent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: var(--rule-w) solid var(--rule);
+        transition: border-color 0.5s, background 0.5s;
+      }
+      .topbar nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 14px;
+        padding-bottom: 14px;
+      }
+      .brand {
+        font-weight: 800; letter-spacing: 0.02em; font-size: 14px;
+        opacity: 0; transform: translateY(9px);
+        transition: opacity 0.45s ease, transform 0.45s ease;
+      }
+      .brand.show { opacity: 1; transform: none; }
+
+      .dotnav {
+        position: fixed; right: 18px; top: 50%;
+        transform: translateY(-50%);
+        display: flex; flex-direction: column; gap: 14px;
+        z-index: 55;
+      }
+      .dotnav a {
+        width: 8px; height: 8px; border-radius: 50%;
+        border: 1.5px solid var(--muted); opacity: 0.5;
+        transition: opacity 0.3s, transform 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s;
+      }
+      .dotnav a:hover { opacity: 0.9; }
+      .dotnav a.on {
+        background: var(--accent); border-color: var(--accent);
+        opacity: 1; transform: scale(1.3);
+      }
+      :global(html[data-mode='night']) .dotnav a.on {
+        box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 65%, transparent);
+      }
+      .dotnav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+      @media (max-width: 900px) { .dotnav { display: none; } }
+      @media (prefers-reduced-motion: reduce) { .brand { transition: none; } }
+      #mode-toggle {
+        border: 1px solid var(--border);
+        background: var(--card);
+        border-radius: 999px;
+        cursor: pointer;
+        font: inherit;
+        display: flex;
+        padding: 3px;
+      }
+      #mode-toggle span {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+        padding: 5px 13px;
+        border-radius: 999px;
+        color: var(--muted);
+        transition: background 0.3s, color 0.3s;
+      }
+      :global(html[data-mode='day']) #mode-toggle .t-day,
+      :global(html[data-mode='night']) #mode-toggle .t-night {
+        background: var(--ink);
+        color: var(--ground);
+      }
+      #mode-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    </style>
+  </body>
+</html>

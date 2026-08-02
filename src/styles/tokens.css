@@ -1,0 +1,89 @@
+/* ─────────────────────────────────────────────
+   tokens.css — the design constitution
+   Locked 2026-07-03 from direction mockup v0.4.
+   DAY  = Swiss Flux      (light, loud, ruled)
+   NIGHT = Phosphor Editorial (warm black, serif, quiet)
+   Change values here; never hardcode colors in components.
+   ───────────────────────────────────────────── */
+
+:root {
+  color-scheme: light dark;
+
+  /* type stacks */
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* type scale */
+  --size-hero: clamp(2.6rem, 7.4vw, 4.6rem);
+  --size-h2: clamp(1.8rem, 4.6vw, 2.8rem);
+  --size-h3: clamp(1.5rem, 3.6vw, 2.2rem);
+  --size-body: 1.04rem;
+  --size-small: 0.93rem;
+  --size-caption: 12px;
+  --size-label: 11px;
+
+  /* rhythm */
+  --space-section: 70px;
+  --width-page: 960px;
+  --width-prose: 52ch;
+}
+
+html[data-mode="day"] {
+  --ground: #F4F3EF;
+  --ink: #111111;
+  --muted: #56554F;
+  --accent: #1D4ED8;
+  --rule: #111111;
+  --rule-w: 2px;
+  --card: #FFFFFF;
+  --border: #DEDCD4;
+
+  /* day is monochrome-serious: neons collapse to the accent */
+  --neon-cyan: var(--accent);
+  --neon-pink: var(--accent);
+  --neon-amber: var(--accent);
+
+  /* voice: Swiss — heavy, uppercase, tight */
+  --display-font: var(--font-sans);
+  --display-weight: 900;
+  --display-transform: uppercase;
+  --display-tracking: -0.035em;
+  --display-leading: 0.95;
+  --display-em-style: normal;
+}
+
+html[data-mode="night"] {
+  --ground: #090C09;
+  --ink: #DDE8DA;
+  --muted: #7E947E;
+  --accent: #7CF5A6;
+  --rule: #24371F;
+  --rule-w: 1px;
+  --card: #10160F;
+  --border: #1E2C1C;
+
+  /* night is a neon workshop: green leads, these punctuate */
+  --neon-cyan: #57E6E6;
+  --neon-pink: #FF7AD9;
+  --neon-amber: #FFC24B;
+
+  /* voice: Phosphor — serif, sentence case, airy */
+  --display-font: var(--font-serif);
+  --display-weight: 500;
+  --display-transform: none;
+  --display-tracking: 0.002em;
+  --display-leading: 1.12;
+  --display-em-style: italic;
+}
+
+/* dusk interlude — constant across modes, like the sky */
+:root {
+  --dusk-top: #141A38;
+  --dusk-mid: #3A2E55;
+  --dusk-bottom: #8A4A3B;
+  --dusk-ink: #F5EDE4;
+  --dusk-muted: #CBB3A8;
+  --dusk-accent: #F0B27A;
+  --dusk-terrain: #0E0C16;
+}

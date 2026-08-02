@@ -1,0 +1,203 @@
+---
+interface Receipt {
+  label: string;
+  value: string;
+  expand?: { items: string[]; note?: string };
+}
+interface LinkItem { label: string; url: string; }
+interface Transmission { text: string; source: string; }
+interface Props {
+  title: string;
+  tagline: string;
+  summary: string;
+  receipts: Receipt[];
+  marginalia?: string;
+  learned?: string[];
+  wip?: boolean;
+  link?: string;
+  links?: LinkItem[];
+  transmission?: Transmission;
+}
+const { title, tagline, summary, receipts, marginalia, learned, wip = false, link, links, transmission } = Astro.props;
+---
+
+<article class="proj rv">
+  <div>
+    <h3 class="display">
+      {link ? <a href={link}>{title}<i class="ext" aria-hidden="true">↗</i></a> : title}. <em>{tagline}</em>
+      {wip && <span class="wip mono">WIP</span>}
+    </h3>
+    <p class="desc">{summary}</p>
+    {links && links.length > 0 && (
+      <div class="linkrow mono">
+        {links.map((l, i) => (
+          <>
+            {i > 0 && <span class="sep" aria-hidden="true">·</span>}
+            <a href={l.url}>{l.label}<i class="ext" aria-hidden="true">↗</i></a>
+          </>
+        ))}
+      </div>
+    )}
+  </div>
+  <div class="nums mono">
+    {receipts.map((r) =>
+      r.expand ? (
+        <div class="num exp" tabindex="0">
+          <div class="numrow">
+            <span>{r.label}</span>
+            <b>{r.value} <i class="tick" aria-hidden="true">▸</i></b>
+          </div>
+          <div class="phasebox">
+            <div class="phasein">
+              <ul>
+                {r.expand.items.map((it) => <li>{it}</li>)}
+              </ul>
+              {r.expand.note && <p class="why">{r.expand.note}</p>}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div class="num"><span>{r.label}</span><b>{r.value}</b></div>
+      )
+    )}
+  </div>
+  <details class="story">
+    <summary class="mono">THE FULL STORY ↓</summary>
+    <div class="storybody"><slot /></div>
+  </details>
+  {learned && learned.length > 0 && (
+    <div class="learned only-night">
+      <p class="learned-label mono">WHAT I DIDN'T KNOW GOING IN</p>
+      <ul>
+        {learned.map((l) => <li>{l}</li>)}
+      </ul>
+    </div>
+  )}
+  {marginalia && <p class="marginalia only-night">{marginalia}</p>}
+  {transmission && (
+    <blockquote class="transmission only-night">
+      <p>{transmission.text}</p>
+      <cite class="mono">{transmission.source}</cite>
+    </blockquote>
+  )}
+</article>
+
+<style>
+  .proj {
+    padding: 34px 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 20px 48px;
+  }
+  @media (max-width: 640px) { .proj { grid-template-columns: 1fr; } }
+  .display { font-size: var(--size-h3); }
+  .display a { color: inherit; text-decoration: none; }
+  .display a:hover, .display a:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 7px;
+  }
+  .ext {
+    font-style: normal; font-size: 0.42em; color: var(--accent);
+    vertical-align: super; margin-left: 4px; letter-spacing: 0;
+  }
+  .wip {
+    font-size: 10px; letter-spacing: 0.14em; vertical-align: middle;
+    color: var(--ground); background: var(--accent);
+    padding: 3px 8px; border-radius: 3px; margin-left: 14px;
+  }
+  .desc { color: var(--muted); font-size: var(--size-small); max-width: 50ch; margin: 12px 0 0; }
+  .linkrow { margin: 12px 0 0; font-size: 11px; letter-spacing: 0.06em; }
+  .linkrow a {
+    color: var(--ink); text-decoration: none;
+    border-bottom: 2px solid var(--accent); padding-bottom: 1px;
+  }
+  .linkrow .sep { color: var(--muted); margin: 0 10px; }
+  .nums { display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+  .num {
+    display: flex; justify-content: space-between; gap: 16px;
+    font-size: var(--size-caption);
+    border-bottom: 1px dotted var(--border); padding-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .num span { color: var(--muted); letter-spacing: 0.08em; }
+  .num b { color: var(--accent); font-weight: 700; font-size: 14px; }
+
+  /* expandable receipt — hover/focus tells you what the number hides */
+  .num.exp { display: block; cursor: default; }
+  .num.exp:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .numrow { display: flex; justify-content: space-between; gap: 16px; }
+  .tick {
+    font-style: normal; font-size: 9px; color: var(--muted);
+    display: inline-block; transition: transform 0.3s, color 0.3s;
+  }
+  .num.exp:hover .tick, .num.exp:focus-within .tick, .num.exp:focus .tick {
+    transform: rotate(90deg); color: var(--accent);
+  }
+  .phasebox {
+    display: grid; grid-template-rows: 0fr; opacity: 0;
+    transition: grid-template-rows 0.4s ease, opacity 0.35s ease;
+  }
+  .num.exp:hover .phasebox, .num.exp:focus-within .phasebox, .num.exp:focus .phasebox {
+    grid-template-rows: 1fr; opacity: 1;
+  }
+  .phasein { overflow: hidden; min-height: 0; }
+  .phasein ul {
+    list-style: none; margin: 10px 0 0; padding: 0;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .phasein li {
+    font-size: 10.5px; letter-spacing: 0.04em; color: var(--muted);
+    line-height: 1.5;
+  }
+  .phasein li::first-line { color: var(--ink); }
+  .phasein .why {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 0.82rem; color: var(--muted);
+    margin: 9px 0 2px; max-width: 40ch; line-height: 1.5;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .phasebox, .tick { transition: none; }
+  }
+  .story { grid-column: 1 / -1; }
+  .story summary {
+    cursor: pointer; list-style: none;
+    font-size: 10.5px; letter-spacing: 0.16em; color: var(--muted);
+    transition: color 0.25s;
+  }
+  .story summary::-webkit-details-marker { display: none; }
+  .story summary:hover { color: var(--accent); }
+  .story[open] summary { color: var(--accent); }
+  .storybody { padding-top: 14px; color: var(--muted); font-size: var(--size-small); }
+  .storybody :global(p) { max-width: 62ch; margin: 0 0 14px; }
+  .storybody :global(strong) { color: var(--ink); }
+  .learned { grid-column: 1 / -1; }
+  .learned-label { font-size: 10px; letter-spacing: 0.16em; color: var(--muted); margin: 0 0 8px; }
+  .learned ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+  .learned li {
+    font-family: var(--font-serif); font-style: italic;
+    color: var(--muted); font-size: 0.88rem; max-width: 58ch;
+  }
+  .learned li::before { content: '✗ → ✓  '; font-style: normal; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+  .marginalia {
+    grid-column: 1 / -1;
+    font-family: var(--font-serif); font-style: italic;
+    color: var(--accent); font-size: 0.9rem; max-width: 54ch; margin: 0;
+  }
+  .marginalia::before { content: '✎ '; font-style: normal; }
+  .transmission {
+    grid-column: 1 / -1; margin: 4px 0 0;
+    padding: 12px 0 0 16px; border-left: 2px solid var(--border);
+  }
+  .transmission p {
+    font-family: var(--font-serif); font-style: italic;
+    color: var(--muted); font-size: 0.9rem; max-width: 56ch;
+    margin: 0 0 6px; line-height: 1.6;
+  }
+  .transmission cite {
+    font-style: normal; font-size: 10px; letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+</style>

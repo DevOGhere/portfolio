@@ -1,0 +1,109 @@
+---
+import HeroField from './HeroField.astro';
+---
+<section class="hero" id="top">
+  <HeroField />
+
+  <div class="wrap ctr">
+    <p class="eyebrow only-day">HELLO THERE · DATA ENGINEER, GÖTTINGEN, DE</p>
+    <p class="eyebrow only-night">hello there · same person, after hours</p>
+
+    <!-- the name itself is rendered by the particle field; this keeps it real for
+         screen readers, search engines and the navbar scroll trigger -->
+    <div class="nameSlot" id="heroName">
+      <h1 class="sr">Ojaswi Sharma</h1>
+    </div>
+
+    <p class="display headline after">I build data systems that <em>prove themselves.</em></p>
+
+    <p class="sub only-day after">
+      End-to-end pipelines, streams and simulations, instrumented until the numbers
+      speak for the work. Previously: production healthcare data platforms for
+      Fortune-500 pharma. Currently: MSc Applied Data Science, Göttingen.
+    </p>
+    <p class="sub only-night after">
+      By day the receipts do the talking. By night: artificial villagers, ideas on
+      shelves, a dog named Kaju who lives too far away, and whatever's currently
+      streaming through the workshop.
+    </p>
+
+    <div class="datarow mono after">
+      <span>latest <b>Fathom</b> · P99 <b class="a">63.4 ms</b></span>
+      <span>status <b>10-Bit Village</b> live · <b class="a">200K+ ticks</b></span>
+      <span class="only-day">focus <b>data engineering · analytics · BI</b></span>
+      <span class="only-night">my uptime <b class="a" id="uptime">…</b> yrs <span class="upnote">(the human, not the pipeline)</span></span>
+    </div>
+  </div>
+
+  <div class="heroFoot after">
+    <p class="cap mono">ORDER ISN’T CREATED. IT’S EXTRACTED.</p>
+    <span class="cue" aria-hidden="true">↓</span>
+  </div>
+</section>
+
+<script>
+  // live uptime — born 2003-07-07 09:47 IST
+  const birth = Date.UTC(2003, 6, 7, 4, 17);
+  const el = document.getElementById('uptime')!;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tick = () => {
+    el.textContent = ((Date.now() - birth) / 31557600000).toFixed(7);
+    if (!reduced) requestAnimationFrame(tick);
+  };
+  tick();
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: calc(100svh - 54px);
+    display: flex; align-items: center;
+    padding: 40px 0 76px;
+  }
+  .ctr { position: relative; z-index: 1; width: 100%; }
+  .upnote { color: var(--muted); font-style: normal; }
+
+  .sr {
+    position: absolute; width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    clip-path: inset(50%); overflow: hidden; white-space: nowrap;
+  }
+  .nameSlot {
+    position: relative;
+    height: clamp(88px, 17vw, 190px);
+    margin: 0 0 26px;
+  }
+
+  .headline { font-size: var(--size-h3); max-width: 24ch; margin: 0; color: var(--ink); }
+  .sub { color: var(--muted); max-width: var(--width-prose); margin: 24px 0 32px; font-size: var(--size-body); }
+  .datarow {
+    display: flex; flex-wrap: wrap; gap: 8px 30px;
+    font-size: var(--size-caption); color: var(--muted);
+    border-top: var(--rule-w) solid var(--rule); padding-top: 12px;
+    max-width: 640px; font-variant-numeric: tabular-nums;
+    transition: border-color 0.5s;
+  }
+  .datarow b { color: var(--ink); font-weight: 700; }
+  .datarow .a { color: var(--accent); }
+
+  .heroFoot {
+    position: absolute; left: 0; right: 0; bottom: 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    z-index: 1; pointer-events: none;
+  }
+  .cap { margin: 0; font-size: 9.5px; letter-spacing: 0.2em; color: var(--muted); }
+  .cue {
+    color: var(--accent); font-size: 15px; line-height: 1;
+    animation: cuebob 2s ease-in-out infinite;
+  }
+  @keyframes cuebob { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(5px); opacity: 1; } }
+
+  /* content waits for the name to form, then rises in */
+  .after { animation: riseIn 0.9s ease 2.6s both; }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .after { animation: none; }
+    .cue { animation: none; }
+  }
+</style>
