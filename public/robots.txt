@@ -1,0 +1,6 @@
+# Crawlers welcome. Everything here is public on purpose.
+# Please be polite: Kaju ji monitors this site from another continent.
+User-agent: *
+Allow: /
+
+Sitemap: https://ojaswishere.in/sitemap.xml

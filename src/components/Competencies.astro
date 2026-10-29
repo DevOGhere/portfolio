@@ -4,6 +4,7 @@
 const wires = [
   { skill: 'Streaming & real-time systems', tools: 'Kafka / Redpanda · Protobuf · TimescaleDB · ClickHouse', proof: 'Fathom: P99 63.4 ms, live soak', href: '#work' },
   { skill: 'Production data platforms', tools: 'Databricks · Delta Lake · Spark · Snowflake · medallion · SCD 1/2', proof: '18 months in production at Veersa', href: '#experience' },
+  { skill: 'Data modeling & BI serving', tools: 'fact tables · KPI definitions · gold layer · SQL · Power BI / Excel serving layer', proof: 'agent-productivity data product: 5+ sources, daily to quarterly KPIs', href: '#experience' },
   { skill: 'Data quality & reliability', tools: 'DQ validation · alerts · watermark ingestion', proof: 'the silent data-loss incident: found, fixed, backfilled', href: '#experience' },
   { skill: 'Observability', tools: 'Prometheus · Grafana · pipeline monitoring', proof: 'every Fathom claim on this page is a dashboard first', href: '#work' },
   { skill: 'Multi-agent systems & simulation', tools: 'deterministic cores · checkpointing · agent design', proof: '10-Bit Village: emergent and reproducible', href: '#work' },
@@ -29,7 +30,8 @@ const nodes = [
 ];
 const skills = [
   { label: 'STREAMING', to: [0] },
-  { label: 'PRODUCTION DE', to: [3] },
+  { label: 'DATA PLATFORMS', to: [3] },
+  { label: 'MODELING & BI', to: [3] },
   { label: 'DATA QUALITY', to: [3] },
   { label: 'OBSERVABILITY', to: [0] },
   { label: 'MULTI-AGENT SIM', to: [2] },
@@ -59,7 +61,7 @@ const wirePath = (i: number, j: number) =>
     {humanSkills.map((h) => <span class="mono">{h}</span>)}
   </div>
 
-  <svg class="wiremap rv" viewBox="0 0 740 300" role="img"
+  <svg class="wiremap rv" viewBox="0 0 740 350" role="img"
        aria-label="Diagram wiring each competency to the project or job where it is proven">
     {skills.map((s, i) => (
       <g class="ws">

@@ -104,3 +104,7 @@ html[data-mode="night"] .star.minor i {
   body { transition: none; }
   html { scroll-behavior: auto; }
 }
+
+/* project body figures (Fathom pipeline diagram) */
+.fd-wrap { margin: 26px 0; overflow-x: auto; }
+.fd-wrap figcaption { margin-top: 10px; font-family: var(--font-mono); font-size: var(--size-label); color: var(--muted); }

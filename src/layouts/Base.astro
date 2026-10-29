@@ -2,11 +2,29 @@
 interface Props {
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
 const {
   title = 'Ojaswi Sharma · Data Solutions Engineer',
-  description = 'I build data systems that prove themselves. End-to-end data solutions, pipelines, modeling and architecture, instrumented until the numbers speak for the work.',
+  description = 'Data solutions engineer in Göttingen. Production Databricks pipelines, a Kafka pipeline with a measured P99, and a village of 100 AI agents. Receipts included.',
+  noindex = false,
 } = Astro.props;
+const canonical = new URL(Astro.url.pathname, 'https://ojaswishere.in').href;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Ojaswi Sharma',
+  url: 'https://ojaswishere.in',
+  jobTitle: 'Data Solutions Engineer',
+  description: 'Data engineer turned MSc student in Göttingen. Built production Databricks and Delta Lake pipelines for healthcare clients, a live Kafka market-data pipeline, and a deterministic multi-agent simulation.',
+  homeLocation: { '@type': 'Place', name: 'Göttingen, Germany' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'Georg-August-Universität Göttingen' },
+    { '@type': 'CollegeOrUniversity', name: 'Guru Gobind Singh Indraprastha University' },
+  ],
+  knowsAbout: ['Data engineering', 'Data modeling', 'Databricks', 'Delta Lake', 'Apache Kafka', 'SQL', 'Python', 'Data quality', 'Business intelligence'],
+  sameAs: ['https://github.com/DevOGhere', 'https://linkedin.com/in/ojaswishere'],
+};
 import '../styles/global.css';
 ---
 
@@ -20,6 +38,9 @@ import '../styles/global.css';
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
     <meta property="og:image" content="https://ojaswishere.in/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
@@ -37,9 +58,15 @@ import '../styles/global.css';
     <header class="topbar">
       <nav class="wrap">
         <span class="brand mono">OJASWI SHARMA</span>
-        <button id="mode-toggle" aria-label="Switch between day and night mode">
-          <span class="t-day">DAY</span><span class="t-night">NIGHT</span>
-        </button>
+        <div class="right">
+          <a class="cv mono" href="/cv.pdf" target="_blank" rel="noopener" aria-label="Open my CV (PDF, opens in a new tab)">
+            CV
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M14.5 1.5 1.5 7l4.6 2 2 4.6zM6.1 9l8.4-7.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          </a>
+          <button id="mode-toggle" aria-label="Switch between day and night mode">
+            <span class="t-day">DAY</span><span class="t-night">NIGHT</span>
+          </button>
+        </div>
       </nav>
     </header>
 
@@ -256,6 +283,17 @@ import '../styles/global.css';
         padding-top: 14px;
         padding-bottom: 14px;
       }
+      .right { display: flex; align-items: center; gap: 14px; }
+      .cv {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 11px; letter-spacing: 0.14em; font-weight: 700;
+        color: var(--ink); text-decoration: none;
+        border-bottom: 2px solid var(--accent); padding: 4px 0 2px;
+      }
+      .cv svg { transition: transform 0.25s ease; }
+      .cv:hover svg, .cv:focus-visible svg { transform: translate(2px, -2px); }
+      .cv:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) { .cv svg { transition: none; } }
       .brand {
         font-weight: 800; letter-spacing: 0.02em; font-size: 14px;
         opacity: 0; transform: translateY(9px);

@@ -1,0 +1,12 @@
+/* TEAM */
+Human: Ojaswi
+Location: Göttingen, Germany
+Contact: see https://ojaswishere.in
+
+/* SITE */
+Built with: Astro, hand-rolled canvas, a lot of 2am
+Built with an AI pair, human had final cut
+Zero trackers, zero cookies, zero frameworks in your browser
+
+/* SECURITY */
+Head of security: Kaju ji (labrador, remote, mostly asleep)
