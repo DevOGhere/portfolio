@@ -219,11 +219,12 @@ import '../styles/global.css';
           ctx.fillText(txt, x, y);
         };
         // each lick is a wet swipe from the mouth up the glass: it stays wet for a moment, drips, then dries
-        const swipes: { pts: { x: number; y: number }[]; fin: number }[] = [];
+        const swipes: { pts: { x: number; y: number }[]; bubbles: { x: number; y: number; r: number }[]; fin: number }[] = [];
         const drips: { x: number; y: number; len: number; a: number }[] = [];
-        const wet = (s: { pts: { x: number; y: number }[]; fin: number }, now: number) =>
+        const wet = (s: { fin: number }, now: number) =>
           s.fin < 0 ? 1 : Math.max(0, 1 - (now - s.fin - 700) / 2600);
-        let lastK = -1, cur: { pts: { x: number; y: number }[]; fin: number } | null = null;
+        let lastK = -1, cur: (typeof swipes)[number] | null = null;
+        const TW = 12 * P;
         const stroke = (pts: { x: number; y: number }[], w: number, style: string) => {
           if (pts.length < 2) return;
           ctx.lineWidth = w; ctx.strokeStyle = style;
@@ -244,9 +245,11 @@ import '../styles/global.css';
           for (let i = swipes.length - 1; i >= 0; i--) if (wet(swipes[i], now) <= 0) swipes.splice(i, 1);
           for (const s of swipes) {
             const a = wet(s, now);
-            stroke(s.pts, 120, `rgba(255,122,217,${(0.07 * a).toFixed(3)})`);
-            stroke(s.pts, 64, `rgba(255,122,217,${(0.12 * a).toFixed(3)})`);
-            stroke(s.pts, 18, `rgba(255,214,242,${(0.16 * a).toFixed(3)})`);   // the shine on the wet middle
+            stroke(s.pts, TW + 14, `rgba(255,122,217,${(0.06 * a).toFixed(3)})`);                       // wet edge
+            stroke(s.pts, TW - 10, `rgba(255,122,217,${(0.10 * a).toFixed(3)})`);                       // the wiped band, as wide as the tongue
+            stroke(s.pts.map((q) => ({ x: q.x - TW * 0.22, y: q.y })), 16, `rgba(255,225,246,${(0.10 * a).toFixed(3)})`);   // glare on the wet glass
+            ctx.strokeStyle = `rgba(255,214,242,${(0.22 * a).toFixed(3)})`; ctx.lineWidth = 2;
+            for (const b of s.bubbles) { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.stroke(); }
           }
           for (let i = drips.length - 1; i >= 0; i--) {
             const d = drips[i];
@@ -256,23 +259,24 @@ import '../styles/global.css';
             ctx.beginPath(); ctx.moveTo(d.x, d.y - d.len); ctx.lineTo(d.x, d.y); ctx.stroke();
           }
 
-          let hop = 0, flick = 0;
+          let hop = 0, tongue: { x: number; y: number }[] | null = null;
           if (sniffing) hop = Math.round(Math.sin(t / 70) * 2);     // nose twitch
           if (licking) {
             const k = Math.floor((t - B) / PASS), lt = ((t - B) % PASS) / PASS;
-            const e = 1 - (1 - lt) ** 2;                              // leaves fast, trails off slow
+            const out = lt < 0.62;                                    // tongue goes up the glass, then pulls back
+            const e = out ? 1 - (1 - lt / 0.62) ** 2 : 1 - ((lt - 0.62) / 0.38) ** 2;   // leaves fast, trails off; comes back fast
             const dir = k % 2 ? -1 : 1;
-            if (k !== lastK) { lastK = k; cur = { pts: [], fin: -1 }; swipes.push(cur); }
+            const at = (u: number) => ({ x: mouthX + dir * Math.sin(u * Math.PI) * W * 0.16 + Math.sin(u * 7) * 14, y: mouthY0 - u * (mouthY0 - 110) });
+            if (k !== lastK) { lastK = k; cur = { pts: [], bubbles: [], fin: -1 }; swipes.push(cur); }
             const s = cur!;
-            if (s.fin < 0) {
-              const tx = mouthX + dir * Math.sin(e * Math.PI) * W * 0.16 + Math.sin(e * 9) * 10;
-              const ty = mouthY0 - e * H * 0.9;
-              s.pts.push({ x: tx, y: ty });
-              if (e > 0.3 && Math.random() < 0.12) drips.push({ x: tx + (Math.random() - 0.5) * 40, y: ty, len: 6, a: 0.55 });
-              if (lt > 0.96) s.fin = now;
-            }
+            if (out) {
+              const q = at(e);
+              s.pts.push(q);                                          // the wet band follows the tip
+              if (e > 0.2 && Math.random() < 0.35) s.bubbles.push({ x: q.x + (Math.random() - 0.5) * TW * 0.7, y: q.y + 40 + Math.random() * 120, r: 2 + Math.random() * 5 });
+              if (e > 0.25 && Math.random() < 0.16) drips.push({ x: q.x + (Math.random() - 0.5) * TW * 0.7, y: q.y + 60, len: 6, a: 0.6 });
+            } else if (s.fin < 0) s.fin = now;
+            tongue = Array.from({ length: 41 }, (_, i) => at(e * i / 40));
             hop = -Math.round(Math.abs(Math.sin(lt * Math.PI)) * 8);   // a little hop into each lick
-            flick = Math.floor(now / 90) % 2;
           } else if (cur && cur.fin < 0) cur.fin = now;
 
           const dy = H - KH - 10 + hop;
@@ -280,9 +284,21 @@ import '../styles/global.css';
             : proud ? (Math.floor(now / 80) % 2 ? EKW : EKA)          // tail going
             : licking ? (Math.floor(now / 160) % 2 ? EKW : EKA) : EKA;
           paint(sprite, x, dy);
-          if (licking) {
-            ctx.fillStyle = '#FF7AD9'; ctx.fillRect(mouthX, dy + 3 * P, P * 2, P * (2 + flick));
-            ctx.fillStyle = '#FF4FC4'; ctx.fillRect(mouthX, dy + 3 * P + P * (1 + flick), P * 2, P);
+          if (licking) { ctx.fillStyle = '#C23C9A'; ctx.fillRect(mouthX, dy + 3 * P, P * 2, P); }    // open mouth
+          if (tongue) {                                                                                // the tongue, in front of the glass: thin at the mouth, broad and round at the tip
+            const n = tongue.length - 1;
+            const seg = (w: (f: number) => number, style: string, from: number, off: (f: number) => number) => {
+              for (let i = Math.floor(n * from); i < n; i++) {
+                const f = i / n, o = off(f);
+                ctx.lineWidth = w(f); ctx.strokeStyle = style;
+                ctx.beginPath(); ctx.moveTo(tongue![i].x + o, tongue![i].y); ctx.lineTo(tongue![i + 1].x + o, tongue![i + 1].y); ctx.stroke();
+              }
+            };
+            const wd = (f: number) => 20 + 112 * f ** 2.2;
+            seg((f) => wd(f) + 12, '#D94FB0', 0, () => 0);                                    // edge
+            seg(wd, '#FF7AD9', 0, () => 0);                                                   // body
+            seg((f) => 5 + 4 * f, '#C23C9A', 0.3, () => 0);                                   // the groove down the middle
+            seg((f) => 3 + 7 * f, '#FFC8F0', 0.45, (f) => -wd(f) * 0.27);                     // shine
           }
           if (sniffing) say('sniff... sniff...', mid + KW / 2, dy - 20, Math.min((t - A) / 250, 1));
           if (t >= C && t < D + 450) say('* lick *  screen cleaned. no crumbs found.', W / 2, H - KH - 52, Math.min((t - C) / 400, 1) * (t > D ? 1 - (t - D) / 450 : 1));
