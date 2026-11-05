@@ -40,6 +40,7 @@ receipts:
         - "click any bar to pause on that second"
         - "each record shows partition:offset, bytes, schema id and its raw stamps"
         - "offsets checked against Redpanda's own tooling: consecutive, no gaps"
+link: https://github.com/DevOGhere/fathom-pulse
 marginalia: >-
   the chaos test caught my detector lying twice, and the second lie was my own
   fix. the green badge only says what it checked: Pulse's own stages, not the
